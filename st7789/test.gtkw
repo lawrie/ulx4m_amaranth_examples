@@ -1,0 +1,13 @@
+[dumpfile] "/home/lawrie/ulx3s-nmigen-examples/st7789/test.vcd"
+[dumpfile_size] 50065
+[treeopen] top.
+@22
+top.st7789.color[15:0]
+top.st7789.x[7:0]
+top.st7789.y[7:0]
+top.st7789.next_pixel
+top.st7789.spi_csn
+top.st7789.spi_clk
+top.st7789.spi_mosi
+top.st7789.spi_dc
+top.st7789.spi_resn
