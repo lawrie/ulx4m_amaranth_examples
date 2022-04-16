@@ -9,7 +9,7 @@ from  st7789 import *
 # The OLED pins are not defined in the ULX3S platform in nmigen_boards.
 oled_resource = [
     Resource("st7789", 0,
-        Subsignal("oled_clk",  Pins("16", dir="o", conn=("gpio",0))),
+        Subsignal("oled_clk",  Pins("17", dir="o", conn=("gpio",0))),
         Subsignal("oled_mosi", Pins("15", dir="o", conn=("gpio",0))),
         Subsignal("oled_dc",   Pins("13", dir="o", conn=("gpio",0))),
         Subsignal("oled_resn", Pins("14", dir="o", conn=("gpio",0))),
