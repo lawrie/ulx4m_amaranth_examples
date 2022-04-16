@@ -98,10 +98,20 @@ class _ULX4MPlatform(LatticeECP5Platform):
         overrides.update(kwargs)
         return super().toolchain_prepare(fragment, name, **overrides)
 
-    def toolchain_program(self, products, name):
-        tool = os.environ.get("OPENFPGALOADER", "openFPGALoader")
-        with products.extract("{}.bit".format(name)) as bitstream_filename:
-            subprocess.check_call([tool, "-b", "ulx3s", '-m', bitstream_filename])
+    def toolchain_program(self, products, name, tool):
+        if tool == "dfu":
+            dfu_util = os.environ.get("DFU_UTIL", "dfu-util")
+            with products.extract("{}.bit".format(name)) as bitstream_filename:
+                subprocess.run([dfu_util, "-a", "0", "-D", bitstream_filename, "-R"])
+        elif tool == "openFPGALoader": 
+            loader = os.environ.get("OPENFPGALOADER", "openFPGALoader")
+            with products.extract("{}.bit".format(name)) as bitstream_filename:
+                subprocess.check_call([loader, "-b", "ulx3s", '-m', bitstream_filename])
+        elif tool == "fujprog" or tool == "ujprog": 
+            with products.extract("{}.bit".format(name)) as bitstream_filename:
+                subprocess.check_call([tool, bitstream_filename])
+        else:
+            print("Unknown tool")
 
 
 class ULX4M_12F_Platform(_ULX4MPlatform):

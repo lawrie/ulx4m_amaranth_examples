@@ -24,7 +24,8 @@ if __name__ == "__main__":
     # Figure out which FPGA variant we want to target...
     parser = argparse.ArgumentParser()
     parser.add_argument('variant', choices=variants.keys())
+    parser.add_argument("--tool", default="fujprog")
     args = parser.parse_args()
 
     platform = variants[args.variant]()
-    platform.build(Blinky(), do_program=True)
+    platform.build(Blinky(), do_program=True, program_opts={"tool":args.tool})
