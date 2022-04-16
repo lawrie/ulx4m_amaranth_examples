@@ -10,18 +10,6 @@ from vga import VGA
 from vga_timings import *
 from ecp5pll import ECP5PLL
 
-gpdi_resource = [
-    # GPDI
-    Resource("gpdi",     0, DiffPairs("F17", "G18"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
-    Resource("gpdi",     1, DiffPairs("D18", "E17"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
-    Resource("gpdi",     2, DiffPairs("C18", "D17"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
-    Resource("gpdi",     3, DiffPairs("J20", "K20"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
-    Resource("gpdi_eth", 0, DiffPairs("A19", "B20"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
-    Resource("gpdi_cec", 0, Pins("A18"),             Attrs(IO_TYPE="LVCMOS33",  DRIVE="4", PULLMODE="UP")),
-    Resource("gpdi_sda", 0, Pins("B19"),             Attrs(IO_TYPE="LVCMOS33",  DRIVE="4", PULLMODE="UP")),
-    Resource("gpdi_scl", 0, Pins("E12"),             Attrs(IO_TYPE="LVCMOS33",  DRIVE="4", PULLMODE="UP")),
-]
-
 #  Modes tested on an ASUS monitor:
 #
 #  640x350  @70Hz
@@ -217,13 +205,10 @@ if __name__ == "__main__":
     # Figure out which FPGA variant we want to target...
     parser = argparse.ArgumentParser()
     parser.add_argument('variant', choices=variants.keys())
+    parser.add_argument("--tool", default="fujprog")
     args = parser.parse_args()
 
     platform = variants[args.variant]()
-
-    # Add the GPDI resource defined above to the platform so we
-    # can reference it below.
-    platform.add_resources(gpdi_resource)
 
     m = Module()
     m.submodules.top = top = TopVGATest(timing=vga_timings['1280x800@60Hz CVT-RB'])
@@ -248,4 +233,4 @@ if __name__ == "__main__":
     for i in range(len(gpdi)):
         m.d.comb += gpdi[i].p.eq(top.o_gpdi_dp[i])
 
-    platform.build(m, do_program=True, nextpnr_opts="--timing-allow-fail")
+    platform.build(m, do_program=True, nextpnr_opts="--timing-allow-fail", program_opts={"tool":args.tool})

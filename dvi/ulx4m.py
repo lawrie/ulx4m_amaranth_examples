@@ -65,7 +65,18 @@ class _ULX4MPlatform(LatticeECP5Platform):
             ba="L18 M20", a="L19 L20 M19 H17 F20 F18 E19 F19 E20 C20 N19 D20 E18",
             dq="U20 T20 U19 T19 T18 T17 R20 P19 H20 J19 K18 J18 H18 J16 K19 J17",
             attrs=Attrs(PULLMODE="NONE", DRIVE="4", SLEWRATE="FAST", IO_TYPE="LVCMOS33")
-        )
+        ),
+
+        # GPDI
+        Resource("gpdi",     0, DiffPairs("F17", "G18"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
+        Resource("gpdi",     1, DiffPairs("D18", "E17"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
+        Resource("gpdi",     2, DiffPairs("C18", "D17"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
+        Resource("gpdi",     3, DiffPairs("J20", "K20"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
+        Resource("gpdi_eth", 0, DiffPairs("A19", "B20"), Attrs(IO_TYPE="LVCMOS33D", DRIVE="4")),
+        Resource("gpdi_cec", 0, Pins("A18"),             Attrs(IO_TYPE="LVCMOS33",  DRIVE="4", PULLMODE="UP")),
+        Resource("gpdi_sda", 0, Pins("B19"),             Attrs(IO_TYPE="LVCMOS33",  DRIVE="4", PULLMODE="UP")),
+        Resource("gpdi_scl", 0, Pins("E12"),             Attrs(IO_TYPE="LVCMOS33",  DRIVE="4", PULLMODE="UP"))
+
     ]
 
     connectors = [
@@ -98,10 +109,20 @@ class _ULX4MPlatform(LatticeECP5Platform):
         overrides.update(kwargs)
         return super().toolchain_prepare(fragment, name, **overrides)
 
-    def toolchain_program(self, products, name):
-        tool = os.environ.get("OPENFPGALOADER", "openFPGALoader")
-        with products.extract("{}.bit".format(name)) as bitstream_filename:
-            subprocess.check_call([tool, "-b", "ulx3s", '-m', bitstream_filename])
+    def toolchain_program(self, products, name, tool):
+        if tool == "dfu":
+            dfu_util = os.environ.get("DFU_UTIL", "dfu-util")
+            with products.extract("{}.bit".format(name)) as bitstream_filename:
+                subprocess.run([dfu_util, "-a", "0", "-D", bitstream_filename, "-R"])
+        elif tool == "openFPGALoader": 
+            loader = os.environ.get("OPENFPGALOADER", "openFPGALoader")
+            with products.extract("{}.bit".format(name)) as bitstream_filename:
+                subprocess.check_call([loader, "-b", "ulx3s", '-m', bitstream_filename])
+        elif tool == "fujprog" or tool == "ujprog": 
+            with products.extract("{}.bit".format(name)) as bitstream_filename:
+                subprocess.check_call([tool, bitstream_filename])
+        else:
+            print("Unknown tool")
 
 
 class ULX4M_12F_Platform(_ULX4MPlatform):
