@@ -10,8 +10,8 @@ from ps2 import *
 
 ps2_pmod = [
     Resource("ps2", 0,
-        Subsignal("clk",  Pins("26", dir="i", conn=("gpio",0))),
-        Subsignal("data", Pins("25", dir="i", conn=("gpio",0))),
+        Subsignal("clk",  Pins("3", dir="i", conn=("gpio",0))),
+        Subsignal("data", Pins("26", dir="i", conn=("gpio",0))),
         Attrs(IO_TYPE="LVCMOS33", DRIVE="4", PULLMODE="NONE"))
 ]
 
