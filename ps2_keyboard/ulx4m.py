@@ -65,6 +65,11 @@ class _ULX4MPlatform(LatticeECP5Platform):
             ba="L18 M20", a="L19 L20 M19 H17 F20 F18 E19 F19 E20 C20 N19 D20 E18",
             dq="U20 T20 U19 T19 T18 T17 R20 P19 H20 J19 K18 J18 H18 J16 K19 J17",
             attrs=Attrs(PULLMODE="NONE", DRIVE="4", SLEWRATE="FAST", IO_TYPE="LVCMOS33")
+        ),
+
+        DirectUSBResource(0,
+            d_p="D15", d_n="E15", pullup="A2",
+            attrs=Attrs(IO_TYPE="LVCMOS33")
         )
     ]
 
